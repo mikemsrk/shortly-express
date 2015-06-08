@@ -13,6 +13,8 @@ var Click = require('./app/models/click');
 
 var app = express();
 
+
+
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.use(partials());
@@ -23,25 +25,40 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
 
-app.get('/', 
-function(req, res) {
+
+
+// Redirect to Login page if not signed in
+app.get('/*',function(req,res){
+  if(false){ //signed in
+
+  } else {
+    console.log('rendering to login...');
+    res.render('login');
+  }
+
+});
+
+
+app.get('/', function(req, res) {
   res.render('index');
 });
 
-app.get('/create', 
-function(req, res) {
+app.get('/login', function(req, res) {
+  console.log('inside login route');
+  res.render('login');
+});
+
+app.get('/create', function(req, res) {
   res.render('index');
 });
 
-app.get('/links', 
-function(req, res) {
+app.get('/links', function(req, res) {
   Links.reset().fetch().then(function(links) {
     res.send(200, links.models);
   });
 });
 
-app.post('/links', 
-function(req, res) {
+app.post('/links',function(req, res) {
   var uri = req.body.url;
 
   if (!util.isValidUrl(uri)) {
@@ -74,6 +91,30 @@ function(req, res) {
   });
 });
 
+
+app.post('/login',function(req, res) {
+  console.log('app : post : /login');
+  var username = req.body.username;
+  var password = req.body.password;
+
+  //check if user exists ?
+
+  //if not create user
+  var user = new User({
+          username: username,
+          password: password
+        });
+  console.log('app : post : saving...');
+  user.save();
+  //respond if persistance is OK
+  res.send(200, "user saved!");
+
+  //sign in user - extra credit
+  //redirect to the requested site - extra credit
+
+});
+
+
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
@@ -85,6 +126,8 @@ function(req, res) {
 // assume the route is a short code and try and handle it here.
 // If the short-code doesn't exist, send the user to '/'
 /************************************************************/
+
+
 
 app.get('/*', function(req, res) {
   new Link({ code: req.params[0] }).fetch().then(function(link) {
