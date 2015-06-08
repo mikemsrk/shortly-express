@@ -93,27 +93,28 @@ app.post('/links',function(req, res) {
 
 
 app.post('/login',function(req, res) {
-  console.log('app : post : /login');
   var username = req.body.username;
   var password = req.body.password;
 
   //check if user exists ?
+  new User({username:username}).fetch().then(function(collection){
+    if(collection){ //user exists
+      res.send(200, "username already taken!");
+    }else{
+      //if not create user
+      var user = new User({
+              username: username,
+              password: password
+            });
+      user.save();
+      //respond if persistance is OK
+      res.send(200, "user saved!");
+    }
+  });
 
-  //if not create user
-  var user = new User({
-          username: username,
-          password: password
-        });
-  console.log('app : post : saving...');
-  user.save();
-  //respond if persistance is OK
-  res.send(200, "user saved!");
 
   //sign in user - extra credit
   //redirect to the requested site - extra credit
-  Users.fetch().then(function(collection){
-    console.log(collection);
-  });
 
 });
 
