@@ -111,6 +111,9 @@ app.post('/login',function(req, res) {
 
   //sign in user - extra credit
   //redirect to the requested site - extra credit
+  Users.fetch().then(function(collection){
+    console.log(collection);
+  });
 
 });
 
