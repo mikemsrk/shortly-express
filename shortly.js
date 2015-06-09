@@ -127,6 +127,25 @@ app.post('/signup',function(req, res) {
 
 });
 
+app.get('/logout',function(req, res) {
+  var s_id = req.cookies.session_id;
+  var s_token = req.cookies.token;
+
+  //check if session exists ?
+  new Session({id: s_id, token: s_token}).fetch().then(function(item){
+    if(item){ //session exists
+      item.destroy();
+      res.send(200, "Logout successful");
+    }else{
+      res.send(200, "Not valid session");
+    }
+  });
+
+  //sign in user - extra credit
+  //redirect to the requested site - extra credit
+
+});
+
 app.post('/login',function(req, res) {
   var username = req.body.username;
   var password = req.body.password;
@@ -149,6 +168,7 @@ app.post('/login',function(req, res) {
         session.save().then(function(){
           res.cookie('session_id', session.get('id'));
           res.cookie('token', session.get('token'));
+
           res.send(200, "session saved!");
         });
 

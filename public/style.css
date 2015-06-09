@@ -52,6 +52,10 @@ h1 {
   background-color: #ccc;
 }
 
+.login {
+  float: right;
+}
+
 #container {
   clear: both;
   margin-top: 10px;
