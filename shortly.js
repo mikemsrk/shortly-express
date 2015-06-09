@@ -25,10 +25,8 @@ app.use(bodyParser.json());
 // Parse forms (signup/login)
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+
 app.use(express.static(__dirname + '/public'));
-
-
-
 
 // Redirect to Login page if not signed in
 // app.get('/*',function(req,res){
@@ -41,10 +39,10 @@ app.use(express.static(__dirname + '/public'));
 
 // });
 
+app.use(util.loginChecker);
 
 app.get('/', function(req, res) {
   res.render('index');
-  console.log(req.cookies);
 });
 
 app.get('/login', function(req, res) {
