@@ -42,7 +42,10 @@ app.use(express.static(__dirname + '/public'));
 app.use(util.loginChecker);
 
 app.get('/', function(req, res) {
-  res.render('index');
+  console.log('app : root url');
+  res.render('index',{
+    loggedin: req.loggedin
+  });
 });
 
 app.get('/login', function(req, res) {
