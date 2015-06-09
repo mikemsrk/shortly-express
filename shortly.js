@@ -63,9 +63,15 @@ app.get('/create', function(req, res) {
 });
 
 app.get('/links', function(req, res) {
-  Links.reset().fetch().then(function(links) {
-    res.send(200, links.models);
+  // Links.reset().fetch().then(function(links) {
+  //   res.send(200, links.models);
+  // });
+  Links.query(function(qb){
+    qb.where('user_id','=',req.user_id);
+  }).fetch().then(function(links){
+      res.send(200,links.models);
   });
+
 });
 
 app.post('/links',function(req, res) {
@@ -85,10 +91,11 @@ app.post('/links',function(req, res) {
           console.log('Error reading URL heading: ', err);
           return res.send(404);
         }
-
+        console.log("shortly : post link : req.user_id= " + req.user_id);
         var link = new Link({
           url: uri,
           title: title,
+          user_id: req.user_id,
           base_url: req.headers.origin
         });
 
