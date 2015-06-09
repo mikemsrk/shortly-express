@@ -2,17 +2,19 @@ var express = require('express');
 var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
 
 
 var db = require('./app/config');
 var Users = require('./app/collections/users');
 var User = require('./app/models/user');
+var Sessions = require('./app/collections/sessions');
+var Session = require('./app/models/session');
 var Links = require('./app/collections/links');
 var Link = require('./app/models/link');
 var Click = require('./app/models/click');
 
 var app = express();
-
 
 
 app.set('views', __dirname + '/views');
@@ -22,30 +24,37 @@ app.use(partials());
 app.use(bodyParser.json());
 // Parse forms (signup/login)
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(express.static(__dirname + '/public'));
 
 
 
 
 // Redirect to Login page if not signed in
-app.get('/*',function(req,res){
-  if(false){ //signed in
+// app.get('/*',function(req,res){
+//   if(false){ //signed in
 
-  } else {
-    console.log('rendering to login...');
-    res.render('login');
-  }
+//   } else {
+//     console.log('rendering to login...');
+//     res.render('login');
+//   }
 
-});
+// });
 
 
 app.get('/', function(req, res) {
   res.render('index');
+  console.log(req.cookies);
 });
 
 app.get('/login', function(req, res) {
   console.log('inside login route');
   res.render('login');
+});
+
+app.get('/signup', function(req, res) {
+  console.log('inside login route');
+  res.render('signup');
 });
 
 app.get('/create', function(req, res) {
@@ -92,7 +101,7 @@ app.post('/links',function(req, res) {
 });
 
 
-app.post('/login',function(req, res) {
+app.post('/signup',function(req, res) {
   var username = req.body.username;
   var password = req.body.password;
 
@@ -112,12 +121,46 @@ app.post('/login',function(req, res) {
     }
   });
 
-
   //sign in user - extra credit
   //redirect to the requested site - extra credit
 
 });
 
+app.post('/login',function(req, res) {
+  var username = req.body.username;
+  var password = req.body.password;
+
+  //check if user exists ?
+  new User({username:username}).fetch().then(function(myuser){
+    console.log(myuser);
+    if(myuser){ //user exists
+      var salt = myuser.get('salt');
+      var authenticated = myuser.checkPassword(username, password);
+      console.log(username + ' authenticated: ' + authenticated);
+
+      // what if already logged in ???
+      if(authenticated){
+        // create a session
+        var session = new Session({
+          user_id: myuser.get('id')
+        });
+
+        session.save().then(function(){
+          res.cookie('session_id', session.get('id'));
+          res.cookie('token', session.get('token'));
+          res.send(200, "session saved!");
+        });
+
+      } else {
+        // redirect
+        console.log('Wrong password, redirecting...');
+        res.render('login');
+      }
+    }else{
+      res.send(200, "user not found");
+    }
+  });
+});
 
 /************************************************************/
 // Write your authentication routes here

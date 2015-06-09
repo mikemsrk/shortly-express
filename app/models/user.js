@@ -21,6 +21,11 @@ var User = db.Model.extend({
       // store the username
       // model.set('username', username);
     });
+  },
+  checkPassword: function(formUsername, formPassword){
+    var salt = this.get('salt');
+    var hashForm = bcrypt.hashSync(formPassword, salt);
+    return hashForm === this.get('password') ? true : false;
   }
 });
 

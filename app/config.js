@@ -59,13 +59,13 @@ db.knex.schema.hasTable('users').then(function(exists) {
   }
 });
 
-db.knex.schema.hasTable('tokens').then(function(exists) {
+db.knex.schema.hasTable('sessions').then(function(exists) {
   if (!exists) {
-    db.knex.schema.createTable('tokens', function (token) {
-      token.increments('id').primary();
-      token.integer('user_id');
-      token.string('token', 255);
-      token.timestamps();
+    db.knex.schema.createTable('sessions', function (session) {
+      session.increments('id').primary();
+      session.integer('user_id');
+      session.string('token', 255);
+      session.timestamps();
     }).then(function (table) {
       console.log('Created Table', table);
     });
