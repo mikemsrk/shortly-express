@@ -125,7 +125,7 @@ app.post('/signup',function(req, res) {
             });
       user.save();
       //respond if persistance is OK
-      res.send(200, "user saved!");
+      res.redirect('login');
     }
   });
 
@@ -142,7 +142,7 @@ app.get('/logout',function(req, res) {
   new Session({id: s_id, token: s_token}).fetch().then(function(item){
     if(item){ //session exists
       item.destroy();
-      res.send(200, "Logout successful");
+      res.redirect('login');
     }else{
       res.send(200, "Not valid session");
     }
@@ -175,8 +175,7 @@ app.post('/login',function(req, res) {
         session.save().then(function(){
           res.cookie('session_id', session.get('id'));
           res.cookie('token', session.get('token'));
-
-          res.send(200, "session saved!");
+          res.redirect('/');
         });
 
       } else {
